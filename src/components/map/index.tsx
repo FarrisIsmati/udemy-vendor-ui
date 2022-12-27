@@ -2,6 +2,16 @@ import { Status, Wrapper } from "@googlemaps/react-wrapper";
 import { createCustomEqual } from "fast-equals";
 import React from "react";
 import { isLatLngLiteral } from "@googlemaps/typescript-guards";
+import styled from 'styled-components';
+
+interface MainMapProps {
+  GOOGLE_MAPS_API_KEY: string;
+}
+
+const MapContainer = styled.div`
+  height: 100%;
+  width: 100%;
+`;
 
 interface MapProps extends google.maps.MapOptions {
   style: { [key: string]: string };
@@ -99,8 +109,7 @@ const Mep: React.FC<MapProps> = ({
   );
 };
 
-export default function Map() {
-    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? '';
+export default function Map({GOOGLE_MAPS_API_KEY}: MainMapProps) {
     const [clicks, setClicks] = React.useState<google.maps.LatLng[]>([]);
     const [zoom, setZoom] = React.useState(3); // initial zoom
     const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
@@ -128,14 +137,14 @@ export default function Map() {
           case Status.FAILURE:
             return <p>fail</p>;
           case Status.SUCCESS:
-            return <Mep
+            return <MapContainer><Mep
               center={center}
               onClick={onClick}
               onIdle={onIdle}
               zoom={zoom}
               style={{ flexGrow: "1", height: "100%" }}
             >
-          </Mep>
+          </Mep></MapContainer>
         }
       }}/>
     )

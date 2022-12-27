@@ -1,10 +1,11 @@
 import Head from 'next/head'
-import { Inter } from '@next/font/google'
 import Map from '../components/map';
 
-const inter = Inter({ subsets: ['latin'] })
+interface HomeProps {
+  GOOGLE_MAPS_API_KEY: string
+}
 
-export default function Home() {
+export default function Home({ GOOGLE_MAPS_API_KEY }: HomeProps) {
   return (
     <>
       <Head>
@@ -14,9 +15,18 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <p>hi</p>
-        <Map/>
+        <Map GOOGLE_MAPS_API_KEY={GOOGLE_MAPS_API_KEY}/>
       </main>
     </>
   )
+}
+
+export async function getStaticProps() {
+  const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? '';
+
+  return { 
+    props: {
+      GOOGLE_MAPS_API_KEY
+    }
+  }
 }
