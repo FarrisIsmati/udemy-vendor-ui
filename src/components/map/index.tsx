@@ -1,5 +1,6 @@
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import React from "react";
+import mapStyle from './style';
+import React, { useEffect } from "react";
 // import { useDeepCompareEffectForMaps } from './hooks';
 import styled from 'styled-components';
 
@@ -29,15 +30,38 @@ const Map: React.FC<MapProps> = ({
   const ref = React.useRef<HTMLDivElement>(null);
   const [map, setMap] = React.useState<google.maps.Map>();
 
-  React.useEffect(() => {
+  // Set the map
+  useEffect(() => {
     if (ref.current && !map) {
       setMap(new window.google.maps.Map(ref.current, {}));
     }
 
     if (map) {
       map.setOptions(options);
+
     }
   }, [ref, map]);
+
+  // Set the markers
+  useEffect(() => {
+    const myLatLng = { lat: 38.9072, lng: -77.036 };
+
+    if (map) {
+      // First marekr
+      const marker = new google.maps.Marker({
+        position: myLatLng,
+        title: "Hello World!",
+      });
+
+      marker.addListener('click', () => {
+        console.log('CLICKED');
+      })
+
+      marker.setMap(map)
+      // marker.setMap(null);
+    }
+  }, [map])
+  
 
   // // Double check once you end up changing props for markers
   // // because React does not do deep comparisons, a custom hook is used to prevent onIdle from continously firing
@@ -103,12 +127,14 @@ export default ({GOOGLE_MAPS_API_KEY}: MainMapProps) => {
             return (
             <MapContainer>
               <Map
+              styles={mapStyle}
                 center={{
-                  lat: 0,
-                  lng: 0
+                  lat: 38.9072,
+                  lng: -77.036
                 }}
                 // onIdle={onIdle}
-                zoom={3}
+                disableDefaultUI
+                zoom={13}
                 style={{ height: "100%" }}
               >
             </Map>
