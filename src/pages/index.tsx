@@ -1,9 +1,15 @@
 import Head from 'next/head'
+import styled from 'styled-components';
+import Dashboard from '../components/dashboard';
 import Map from '../components/map';
 
 interface HomeProps {
   GOOGLE_MAPS_API_KEY: string
 }
+
+const MainStyled = styled.main`
+  display: flex;
+`;
 
 export default function Home({ GOOGLE_MAPS_API_KEY }: HomeProps) {
   return (
@@ -14,9 +20,10 @@ export default function Home({ GOOGLE_MAPS_API_KEY }: HomeProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <MainStyled>
+        <Dashboard />
         <Map GOOGLE_MAPS_API_KEY={GOOGLE_MAPS_API_KEY}/>
-      </main>
+      </MainStyled>
     </>
   )
 }

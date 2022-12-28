@@ -1,7 +1,6 @@
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { createCustomEqual } from "fast-equals";
 import React from "react";
-import { isLatLngLiteral } from "@googlemaps/typescript-guards";
+// import { useDeepCompareEffectForMaps } from './hooks';
 import styled from 'styled-components';
 
 interface MainMapProps {
@@ -20,42 +19,7 @@ interface MapProps extends google.maps.MapOptions {
   children?: React.ReactNode;
 }
 
-const deepCompareEqualsForMaps = createCustomEqual(
-  (deepEqual) => (a: any, b: any) => {
-    if (
-      isLatLngLiteral(a) ||
-      a instanceof google.maps.LatLng ||
-      isLatLngLiteral(b) ||
-      b instanceof google.maps.LatLng
-    ) {
-      return new google.maps.LatLng(a).equals(new google.maps.LatLng(b));
-    }
-
-    // TODO extend to other types
-
-    // use fast-equals for other objects
-    return deepEqual(a, b);
-  }
-);
-
-function useDeepCompareMemoize(value: any) {
-  const ref = React.useRef();
-
-  if (!deepCompareEqualsForMaps(value, ref.current)) {
-    ref.current = value;
-  }
-
-  return ref.current;
-}
-
-function useDeepCompareEffectForMaps(
-  callback: React.EffectCallback,
-  dependencies: any[]
-) {
-  React.useEffect(callback, dependencies.map(useDeepCompareMemoize));
-}
-
-const Mep: React.FC<MapProps> = ({
+const Map: React.FC<MapProps> = ({
   onClick,
   onIdle,
   children,
@@ -69,31 +33,37 @@ const Mep: React.FC<MapProps> = ({
     if (ref.current && !map) {
       setMap(new window.google.maps.Map(ref.current, {}));
     }
-  }, [ref, map]);
 
-  // because React does not do deep comparisons, a custom hook is used
-  // see discussion in https://github.com/googlemaps/js-samples/issues/946
-  useDeepCompareEffectForMaps(() => {
     if (map) {
       map.setOptions(options);
     }
-  }, [map, options]);
+  }, [ref, map]);
 
-  React.useEffect(() => {
-    if (map) {
-      ["click", "idle"].forEach((eventName) =>
-        google.maps.event.clearListeners(map, eventName)
-      );
+  // // Double check once you end up changing props for markers
+  // // because React does not do deep comparisons, a custom hook is used to prevent onIdle from continously firing
+  // // see discussion in https://github.com/googlemaps/js-samples/issues/946
+  // useDeepCompareEffectForMaps(() => {
+  //   if (map) {
+  //     map.setOptions(options);
+  //   }
+  // }, [map, options]);
 
-      if (onClick) {
-        map.addListener("click", onClick);
-      }
+  // React.useEffect(() => {
+  //   if (map) {
+  //     // If listeners change clear them
+  //     ["click", "idle"].forEach((eventName) =>
+  //       google.maps.event.clearListeners(map, eventName)
+  //     );
 
-      if (onIdle) {
-        map.addListener("idle", () => onIdle(map));
-      }
-    }
-  }, [map, onClick, onIdle]);
+  //     if (onClick) {
+  //       map.addListener("click", onClick);
+  //     }
+
+  //     if (onIdle) {
+  //       map.addListener("idle", () => onIdle(map));
+  //     }
+  //   }
+  // }, [map, onClick, onIdle]);
 
   return (
     <>
@@ -109,26 +79,19 @@ const Mep: React.FC<MapProps> = ({
   );
 };
 
-export default function Map({GOOGLE_MAPS_API_KEY}: MainMapProps) {
-    const [clicks, setClicks] = React.useState<google.maps.LatLng[]>([]);
-    const [zoom, setZoom] = React.useState(3); // initial zoom
-    const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
-      lat: 0,
-      lng: 0,
-    });
-    const onClick = (e: google.maps.MapMouseEvent) => {
-      // avoid directly mutating state
-      setClicks([...clicks, e.latLng!]);
-    };
-    const [marker, setMarker] = React.useState<google.maps.Marker>();
+export default ({GOOGLE_MAPS_API_KEY}: MainMapProps) => {
+  // const [zoom, setZoom] = React.useState(3); // initial zoom
+  // const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
+  //   lat: 0,
+  //   lng: 0,
+  // });
 
-    const onIdle = (m: google.maps.Map) => {
-      console.log("onIdle");
-      setZoom(m.getZoom()!);
-      setCenter(m.getCenter()!.toJSON());
-    };
-  
-    
+  // const onIdle = (m: google.maps.Map) => {
+    // console.log("onIdle");
+    // setZoom(m.getZoom()!);
+    // setCenter(m.getCenter()!.toJSON());
+  // };
+
     return (
       <Wrapper apiKey={GOOGLE_MAPS_API_KEY} render={(status: Status) => {
         switch (status) {
@@ -137,14 +100,20 @@ export default function Map({GOOGLE_MAPS_API_KEY}: MainMapProps) {
           case Status.FAILURE:
             return <p>fail</p>;
           case Status.SUCCESS:
-            return <MapContainer><Mep
-              center={center}
-              onClick={onClick}
-              onIdle={onIdle}
-              zoom={zoom}
-              style={{ flexGrow: "1", height: "100%" }}
-            >
-          </Mep></MapContainer>
+            return (
+            <MapContainer>
+              <Map
+                center={{
+                  lat: 0,
+                  lng: 0
+                }}
+                // onIdle={onIdle}
+                zoom={3}
+                style={{ height: "100%" }}
+              >
+            </Map>
+            </MapContainer>
+          )
         }
       }}/>
     )
