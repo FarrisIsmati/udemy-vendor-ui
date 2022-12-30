@@ -1,23 +1,28 @@
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import styled from "styled-components";
 
+interface TileProps {
+    imgUrl: string,
+    name: string,
+    location: string,
+}
+
 const ListStyled = styled(List)`
-    height: 300px;
     width: 100%;
     padding-top: 0;
     padding-bottom: 0;
 `;
 
-export default () => {
+export default ({imgUrl, name, location}: TileProps) => {
     return (
         <ListStyled aria-label="vendors list">
             <ListItem button>
                 <ListItemAvatar>
                     <Avatar>
-                        <img src="https://placeholder.com/" />
+                        <img src={imgUrl} />
                     </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary="DC Food Trucks" secondary="N/A" />
+                <ListItemText primary={name} secondary={location ?? 'N/A'} />
             </ListItem>
             <Divider />
         </ListStyled>

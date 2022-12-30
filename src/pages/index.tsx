@@ -4,14 +4,15 @@ import Dashboard from '../components/dashboard';
 import Map from '../components/map';
 
 interface HomeProps {
-  GOOGLE_MAPS_API_KEY: string
+  GOOGLE_MAPS_API_KEY: string,
+  vendors: any
 }
 
 const MainStyled = styled.main`
   display: flex;
 `;
 
-export default function Home({ GOOGLE_MAPS_API_KEY }: HomeProps) {
+export default function Home({ GOOGLE_MAPS_API_KEY, vendors }: HomeProps) {
   return (
     <>
       <Head>
@@ -21,19 +22,43 @@ export default function Home({ GOOGLE_MAPS_API_KEY }: HomeProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <MainStyled>
-        <Dashboard />
+        <Dashboard vendors={vendors} />
         <Map GOOGLE_MAPS_API_KEY={GOOGLE_MAPS_API_KEY}/>
       </MainStyled>
     </>
   )
 }
 
+const getVendors = async () => {
+  const url = process.env.VENDORS_API_URL;
+
+  if (url) {
+    const res = await fetch(url);
+    // The return value is *not* serialized
+    // You can return Date, Map, Set, etc.
+  
+    // Recommendation: handle errors
+    if (!res.ok) {
+      // This will activate the closest `error.js` Error Boundary
+      throw new Error('Failed to fetch data');
+    }
+
+    return res.json();
+  }
+
+  throw new Error('No vendors api url available');
+}
+
+
+
 export async function getStaticProps() {
   const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? '';
+  const vendors = await getVendors();
 
   return { 
     props: {
-      GOOGLE_MAPS_API_KEY
+      GOOGLE_MAPS_API_KEY,
+      vendors
     }
   }
 }
