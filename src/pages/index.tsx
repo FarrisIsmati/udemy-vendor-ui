@@ -1,11 +1,12 @@
 import Head from 'next/head'
 import styled from 'styled-components';
+import { getVendors, Vendors } from '../api/vendors';
 import Dashboard from '../components/dashboard';
 import Map from '../components/map';
 
 interface HomeProps {
   GOOGLE_MAPS_API_KEY: string,
-  vendors: any
+  vendors: Vendors
 }
 
 const MainStyled = styled.main`
@@ -29,36 +30,27 @@ export default function Home({ GOOGLE_MAPS_API_KEY, vendors }: HomeProps) {
   )
 }
 
-const getVendors = async () => {
-  const url = process.env.VENDORS_API_URL;
-
-  if (url) {
-    const res = await fetch(url);
-    // The return value is *not* serialized
-    // You can return Date, Map, Set, etc.
-  
-    // Recommendation: handle errors
-    if (!res.ok) {
-      // This will activate the closest `error.js` Error Boundary
-      throw new Error('Failed to fetch data');
-    }
-
-    return res.json();
-  }
-
-  throw new Error('No vendors api url available');
-}
-
-
-
+// Because it’s meant to be run at build time, you won’t be able to use data that’s only available during request time, 
+// such as query parameters or HTTP headers.
+// Need to lazy load rest of the vendors if paginated on client side after to fill out vendors prop (or state we create?)
 export async function getStaticProps() {
   const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? '';
-  const vendors = await getVendors();
+  let vendors; 
+  try {
+    vendors = await getVendors<Vendors>(); //{ Items: [{name: 'lol', locaiton: 'lolz'}]} 
+  } catch (e) {
+    if (e instanceof Error) {
+      vendors = { Items: [] }
+    } else {
+      throw new Error('getVendors unexpected error');   
+    }
+  }
 
   return { 
     props: {
       GOOGLE_MAPS_API_KEY,
       vendors
-    }
+    },
+    revalidate: 120, // seconds
   }
 }
