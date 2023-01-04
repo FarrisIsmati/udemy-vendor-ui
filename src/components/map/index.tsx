@@ -3,9 +3,11 @@ import mapStyle from './style';
 import React, { useEffect } from "react";
 // import { useDeepCompareEffectForMaps } from './hooks';
 import styled from 'styled-components';
+import { Vendors } from "../../api/types";
 
 interface MainMapProps {
   GOOGLE_MAPS_API_KEY: string;
+  vendors: Vendors;
 }
 
 const MapContainer = styled.div`
@@ -18,6 +20,7 @@ interface MapProps extends google.maps.MapOptions {
   onClick?: (e: google.maps.MapMouseEvent) => void;
   onIdle?: (map: google.maps.Map) => void;
   children?: React.ReactNode;
+  vendors: Vendors;
 }
 
 const Map: React.FC<MapProps> = ({
@@ -25,6 +28,7 @@ const Map: React.FC<MapProps> = ({
   onIdle,
   children,
   style,
+  vendors,
   ...options
 }) => {
   const ref = React.useRef<HTMLDivElement>(null);
@@ -44,23 +48,28 @@ const Map: React.FC<MapProps> = ({
 
   // Set the markers
   useEffect(() => {
-    const myLatLng = { lat: 38.9072, lng: -77.036 };
-
     if (map) {
-      // First marekr
-      const marker = new google.maps.Marker({
-        position: myLatLng,
-        title: "Hello World!",
-      });
+      console.log('SETTING MARKERS')
+      const markers = [];
+      vendors.Items.forEach((vendor) => {
+        if (vendor.tweets.length) {
 
-      marker.addListener('click', () => {
-        console.log('CLICKED');
+          // YOU HAVE YOUR LAT LONG MIXED UP!
+          const marker = new google.maps.Marker({
+            position: { lng: vendor.tweets[0].geo.coordinates.lat, lat: vendor.tweets[0].geo.coordinates.long },
+            title: vendor.name,
+            map: map
+          });
+
+          // NOTE: NEED TO UNMOUNT LISTENERS
+          marker.addListener('click', () => {
+            console.log('clicked', vendor.name);
+          })
+        }
       })
-
-      marker.setMap(map)
-      // marker.setMap(null);
+      // marker.setMap(null); // RESET
     }
-  }, [map])
+  }, [map, vendors.Items]) // might need to update vendors comparison here
   
 
   // // Double check once you end up changing props for markers
@@ -103,7 +112,7 @@ const Map: React.FC<MapProps> = ({
   );
 };
 
-export default ({GOOGLE_MAPS_API_KEY}: MainMapProps) => {
+export default ({GOOGLE_MAPS_API_KEY, vendors}: MainMapProps) => {
   // const [zoom, setZoom] = React.useState(3); // initial zoom
   // const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
   //   lat: 0,
@@ -136,6 +145,7 @@ export default ({GOOGLE_MAPS_API_KEY}: MainMapProps) => {
                 disableDefaultUI
                 zoom={13}
                 style={{ height: "100%" }}
+                vendors={vendors}
               >
             </Map>
             </MapContainer>

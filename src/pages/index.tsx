@@ -1,10 +1,11 @@
 import Head from 'next/head'
 import { useState } from 'react';
 import styled from 'styled-components';
-import { Vendors } from '../api/types';
+import { Tweet, Vendors } from '../api/types';
 import { getVendors } from '../api/vendors';
 import Dashboard from '../components/dashboard';
 import Map from '../components/map';
+import { vendorsSort } from '../helper/sort';
 
 interface HomeProps {
   GOOGLE_MAPS_API_KEY: string,
@@ -17,7 +18,6 @@ const MainStyled = styled.main`
 
 export default function Home({ GOOGLE_MAPS_API_KEY, initVendors }: HomeProps) {
   const [vendors, setVendors] = useState(initVendors);
-  console.log(vendors)
   return (
     <>
       <Head>
@@ -28,7 +28,7 @@ export default function Home({ GOOGLE_MAPS_API_KEY, initVendors }: HomeProps) {
       </Head>
       <MainStyled>
         <Dashboard vendors={vendors} setVendors={setVendors} />
-        <Map GOOGLE_MAPS_API_KEY={GOOGLE_MAPS_API_KEY}/>
+        <Map GOOGLE_MAPS_API_KEY={GOOGLE_MAPS_API_KEY} vendors={vendors} />
       </MainStyled>
     </>
   )
@@ -41,7 +41,8 @@ export async function getServerSideProps() { // getStaticProps() {
   const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? ''; // Mabye we need to hdie this?
   let vendors: Vendors | Error; 
   try {
-    vendors = await getVendors<Vendors | Error>(14); //{ Items: [{name: 'lol', locaiton: 'lolz'}]} 
+    vendors = await getVendors<Vendors>(14); //{ Items: [{name: 'lol', locaiton: 'lolz'}]}
+    vendors.Items = vendorsSort(vendors);
   } catch (e) {
     if (e instanceof Error) {
       vendors = { Items: [], count: 0, lastEvaluatedKey: null }
@@ -49,7 +50,7 @@ export async function getServerSideProps() { // getStaticProps() {
       throw new Error('getVendors unexpected error');   
     }
   }
-
+  
   return { 
     props: {
       GOOGLE_MAPS_API_KEY,

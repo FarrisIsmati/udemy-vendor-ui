@@ -5,7 +5,7 @@ const { VENDORS_API_URL } = publicRuntimeConfig
 
 // https://swr.vercel.app/ fetch cached hook, then revalidate cache async so it's fast UI wise
 
-export const getVendors = async <T>(limit?: number, lastEvaluatedKey?: string): Promise<T | Error> => {
+export const getVendors = async <T>(limit?: number, lastEvaluatedKey?: string): Promise<T> => {
   if (VENDORS_API_URL) {
     const url = new URL(VENDORS_API_URL);
 

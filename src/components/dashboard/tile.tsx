@@ -32,12 +32,12 @@ const LocationDisplay = ({geo}: LocationDisplayProps) => {
         return (
             <AddressStyled>
                 <p>{geo.full_name}</p>
-                <p>{geo.coordinates.lat} | {geo.coordinates.long}</p>
+                <p>{geo.coordinates.lat.toFixed(4)} | {geo.coordinates.long.toFixed(4)}</p>
             </AddressStyled>
         )
     }
     
-    return <p>N/A</p>
+    return <p>-</p>
 }
 
 export default ({imgUrl, name, geo}: TileProps) => {
