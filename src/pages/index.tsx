@@ -1,19 +1,23 @@
 import Head from 'next/head'
+import { useState } from 'react';
 import styled from 'styled-components';
-import { getVendors, Vendors } from '../api/vendors';
+import { Vendors } from '../api/types';
+import { getVendors } from '../api/vendors';
 import Dashboard from '../components/dashboard';
 import Map from '../components/map';
 
 interface HomeProps {
   GOOGLE_MAPS_API_KEY: string,
-  vendors: Vendors
+  initVendors: Vendors
 }
 
 const MainStyled = styled.main`
   display: flex;
 `;
 
-export default function Home({ GOOGLE_MAPS_API_KEY, vendors }: HomeProps) {
+export default function Home({ GOOGLE_MAPS_API_KEY, initVendors }: HomeProps) {
+  const [vendors, setVendors] = useState(initVendors);
+  console.log(vendors)
   return (
     <>
       <Head>
@@ -23,7 +27,7 @@ export default function Home({ GOOGLE_MAPS_API_KEY, vendors }: HomeProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <MainStyled>
-        <Dashboard vendors={vendors} />
+        <Dashboard vendors={vendors} setVendors={setVendors} />
         <Map GOOGLE_MAPS_API_KEY={GOOGLE_MAPS_API_KEY}/>
       </MainStyled>
     </>
@@ -33,14 +37,14 @@ export default function Home({ GOOGLE_MAPS_API_KEY, vendors }: HomeProps) {
 // Because it’s meant to be run at build time, you won’t be able to use data that’s only available during request time, 
 // such as query parameters or HTTP headers.
 // Need to lazy load rest of the vendors if paginated on client side after to fill out vendors prop (or state we create?)
-export async function getStaticProps() {
-  const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? '';
-  let vendors; 
+export async function getServerSideProps() { // getStaticProps() {
+  const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? ''; // Mabye we need to hdie this?
+  let vendors: Vendors | Error; 
   try {
-    vendors = await getVendors<Vendors>(); //{ Items: [{name: 'lol', locaiton: 'lolz'}]} 
+    vendors = await getVendors<Vendors | Error>(14); //{ Items: [{name: 'lol', locaiton: 'lolz'}]} 
   } catch (e) {
     if (e instanceof Error) {
-      vendors = { Items: [] }
+      vendors = { Items: [], count: 0, lastEvaluatedKey: null }
     } else {
       throw new Error('getVendors unexpected error');   
     }
@@ -49,8 +53,8 @@ export async function getStaticProps() {
   return { 
     props: {
       GOOGLE_MAPS_API_KEY,
-      vendors
+      initVendors: vendors
     },
-    revalidate: 120, // seconds
+    // revalidate: 60, // seconds
   }
 }

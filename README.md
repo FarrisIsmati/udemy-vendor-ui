@@ -10,3 +10,7 @@ WEBSOCKET REPO SETUP
 
 MAPS COMPONENT
 1. Google maps API Key
+
+
+2. next.config.js (Place URL in here and env.local)
+3. RESLOVE CORS ISSUE
