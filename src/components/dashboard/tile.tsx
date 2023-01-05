@@ -1,4 +1,4 @@
-import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import styled from "styled-components";
 import { Geo } from "../../api/types";
 
@@ -10,8 +10,8 @@ interface TileProps {
 
 const ListStyled = styled(List)`
     width: 100%;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 0px;
+    padding-bottom: 0px;
 `;
 
 const ImageStyled = styled.img`
@@ -23,6 +23,17 @@ const AddressStyled = styled.div`
     flex-direction: column;
 `;
 
+const TextContainer = styled.div`
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    
+    & > .div {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+`;
+
 interface LocationDisplayProps {
     geo?: Geo
 }
@@ -31,28 +42,36 @@ const LocationDisplay = ({geo}: LocationDisplayProps) => {
     if (geo) {
         return (
             <AddressStyled>
-                <p>{geo.full_name}</p>
-                <p>{geo.coordinates.lat.toFixed(4)} | {geo.coordinates.long.toFixed(4)}</p>
+                <Typography component="span">{geo.full_name}</Typography>
+                <Typography component="span">{geo.coordinates.lat.toFixed(4)} | {geo.coordinates.long.toFixed(4)}</Typography>
             </AddressStyled>
         )
     }
     
-    return <p>-</p>
+    return <Typography component="span">-</Typography>
 }
 
+{/* avatar width/height defaults to 40px in mui */}
 export default ({imgUrl, name, geo}: TileProps) => {
     return (
-        <ListStyled aria-label="vendors list">
-            <ListItem button>
-                <ListItemAvatar>
-                    <Avatar sx={{ width: 40, height: 40 }}> {/* width/height defaults to 40px in mui */}
-                        <ImageStyled src={imgUrl} />
-                    </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={name} secondary={<LocationDisplay geo={geo}/>} />
-            </ListItem>
+        <>
+            <ListStyled aria-label="vendors list">
+                <ListItem button>
+                    <ListItemAvatar>
+                        <Avatar sx={{ width: 40, height: 40 }}> 
+                            <ImageStyled src={imgUrl} />
+                        </Avatar>
+                    </ListItemAvatar>
+                    {/* certain components in materialsUI are super compatiable with nextjs like ListItemText primary + secondary because they next <p>tags  */}
+                    {/* So will separate them out like this */}
+                    <TextContainer>
+                        <Typography component="span">{name}</Typography>
+                        <LocationDisplay geo={geo} />
+                    </TextContainer>
+                </ListItem>
+            </ListStyled>
             <Divider />
-        </ListStyled>
+        </>
     )
 }
 

@@ -49,14 +49,15 @@ const Map: React.FC<MapProps> = ({
   // Set the markers
   useEffect(() => {
     if (map) {
-      console.log('SETTING MARKERS')
       const markers = [];
+
+      // IT ADDS NEW MARKERS NEED TO DELETE OLD ONES OR JUST MOVE THEM!
       vendors.Items.forEach((vendor) => {
         if (vendor.tweets.length) {
 
           // YOU HAVE YOUR LAT LONG MIXED UP!
           const marker = new google.maps.Marker({
-            position: { lng: vendor.tweets[0].geo.coordinates.lat, lat: vendor.tweets[0].geo.coordinates.long },
+            position: { lat: vendor.tweets[vendor.tweets.length - 1].geo.coordinates.lat, lng: vendor.tweets[vendor.tweets.length - 1].geo.coordinates.long },
             title: vendor.name,
             map: map
           });

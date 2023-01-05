@@ -9,8 +9,7 @@ WEBSOCKET REPO SETUP
 4. create next app and install dependencies, create src folder & move pages, .babelrc file and `npm install --save-dev babel-plugin-styled-components`
 
 MAPS COMPONENT
-1. Google maps API Key
+1. Google maps API Key (is it safe?)
 
 
-2. next.config.js (Place URL in here and env.local)
-3. RESLOVE CORS ISSUE
+2. next.config.js (Place URLs in here and env.local)
