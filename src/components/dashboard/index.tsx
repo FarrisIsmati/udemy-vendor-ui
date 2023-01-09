@@ -10,15 +10,14 @@ import { vendorsSort } from '../../helper/util';
 interface DashboardProps {
     vendors: Vendors;
     setVendors: Dispatch<SetStateAction<Vendors>>;
-    markers: {[key: string]: google.maps.Marker};
 }
 
-const Dashboard = styled.div`
+const DashboardStyled = styled.div`
     width: 400px;
     overflow: auto;
 `;
 
-export default ({vendors, setVendors, markers}: DashboardProps) => {
+export default function Dashboard({vendors, setVendors}: DashboardProps) {
     const next = async () => {
         try {
             const updatedVendors: Vendors = {
@@ -52,7 +51,7 @@ export default ({vendors, setVendors, markers}: DashboardProps) => {
     }
 
     return (
-        <Dashboard id="scrollableDiv">
+        <DashboardStyled id="scrollableDiv">
             <InfiniteScroll
                 dataLength={vendors.Items.length}
                 next={next}
@@ -71,6 +70,6 @@ export default ({vendors, setVendors, markers}: DashboardProps) => {
                         />
                     ))}
             </InfiniteScroll>
-        </Dashboard>
+        </DashboardStyled>
     )
 }

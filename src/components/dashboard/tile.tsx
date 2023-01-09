@@ -52,7 +52,7 @@ const LocationDisplay = ({geo}: LocationDisplayProps) => {
 }
 
 {/* avatar width/height defaults to 40px in mui */}
-export default ({imgUrl, name, geo}: TileProps) => {
+export default function Tile({imgUrl, name, geo}: TileProps) {
     return (
         <>
             <ListStyled aria-label="vendors list">

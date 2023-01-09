@@ -47,7 +47,7 @@ const Map: React.FC<MapProps> = ({
     if (map) {
       map.setOptions(options);
     }
-  }, [ref, map]);
+  }, [ref, map, options]);
 
   // Set the initial markers
   useEffect(() => {
@@ -88,7 +88,7 @@ const Map: React.FC<MapProps> = ({
         }
       })
     }
-  }, [map, vendors.Items])
+  }, [map, vendors.Items, markers, setMarkers])
 
   return (
     <>
@@ -104,7 +104,7 @@ const Map: React.FC<MapProps> = ({
   );
 };
 
-export default ({vendors, markers, setMarkers}: MainMapProps) => {
+export default function MapWrapper({vendors, markers, setMarkers}: MainMapProps) {
     return (
       <Wrapper apiKey={GOOGLE_MAPS_API_KEY} render={(status: Status) => {
         switch (status) {
