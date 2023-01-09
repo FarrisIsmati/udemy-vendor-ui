@@ -31,9 +31,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build connect ECR
+      - name: Build ui registry
         uses: int128/create-ecr-repository-action@v1
-        id: connect-ecr
+        id: ui-registry
         with:
           repository: vendors_ui_container
 
@@ -42,7 +42,7 @@ jobs:
         env:
           AWS_ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           AWS_IMAGE_TAG: ${{ github.sha }}
-          AWS_ECR_URI: ${{ steps.ecr.outputs.repository-uri }}
+          AWS_ECR_URI: ${{ steps.ui-registry.outputs.repository-uri }}
         run: |
           docker build -t $AWS_ECR_URI:$AWS_IMAGE_TAG .
           docker push $AWS_ECR_URI:$AWS_IMAGE_TAG
