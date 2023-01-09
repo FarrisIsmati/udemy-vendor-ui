@@ -1,5 +1,6 @@
 # Initalize next.js app
 yarn create next-app --typescript
+# TRY yarn create next-app --typescript nextjs-docker
 
 # STEPS WHEN RECORDING
 INITIAL SETUP
@@ -32,6 +33,15 @@ DASHBOARD
 WEBSOCKET
 1. Websocket connect websocket.ts
 2. websocket on useEffect main.tsx
+
+DOCKERFILE SETUP
+1. Dockerfile (setup dockerifle for connect.ts) (note copy logic we are copying everything including methods we dont need, could split up lambda, use complex copy logic, but I find this suitable given its a small file)
+2. connect.ts (Write and test docker local build commands)
+3. Dockerfile (setup dockerifle for disconnect.ts, send-vendor.ts)
+4. disconnect.ts, send-vendor.ts (Quickly setup code as step 3. but faster let user know we just covered this in detail)
+5. connect.ts (Write main.yml code) (test if updates on ECR)
+6. disconnect.ts, send-vendor.ts (Quickly setup code as step 5. but faster let user know we just covered this in detail)
+8. GET VENDOR
 
 TERRAFORM
 1. Update github OIDC role
