@@ -1,7 +1,5 @@
-import { isBrowser } from '../helper/util';
-
 export const websocket = (url: string) => {
-    if (isBrowser) {
+    if (typeof window !== "undefined") {
         try {
             const ws = new WebSocket(url);
             return ws;

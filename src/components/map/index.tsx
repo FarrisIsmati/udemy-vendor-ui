@@ -1,13 +1,17 @@
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
 import mapStyle from './style';
-import React, { useEffect } from "react";
-// import { useDeepCompareEffectForMaps } from './hooks';
+import React, { useEffect, useRef, useState } from "react";
 import styled from 'styled-components';
 import { Vendors } from "../../api/types";
+import getConfig from "next/config";
+
+const { publicRuntimeConfig } = getConfig()
+const { GOOGLE_MAPS_API_KEY } = publicRuntimeConfig
 
 interface MainMapProps {
-  GOOGLE_MAPS_API_KEY: string;
   vendors: Vendors;
+  markers: {[key: string]: google.maps.Marker};
+  setMarkers: React.Dispatch<React.SetStateAction<{[key: string]: google.maps.Marker}>>;
 }
 
 const MapContainer = styled.div`
@@ -17,22 +21,22 @@ const MapContainer = styled.div`
 
 interface MapProps extends google.maps.MapOptions {
   style: { [key: string]: string };
-  onClick?: (e: google.maps.MapMouseEvent) => void;
-  onIdle?: (map: google.maps.Map) => void;
   children?: React.ReactNode;
   vendors: Vendors;
+  markers: {[key: string]: google.maps.Marker};
+  setMarkers: React.Dispatch<React.SetStateAction<{[key: string]: google.maps.Marker}>>;
 }
 
 const Map: React.FC<MapProps> = ({
-  onClick,
-  onIdle,
   children,
   style,
   vendors,
+  markers,
+  setMarkers,
   ...options
 }) => {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const [map, setMap] = React.useState<google.maps.Map>();
+  const ref = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<google.maps.Map>();
 
   // Set the map
   useEffect(() => {
@@ -42,62 +46,49 @@ const Map: React.FC<MapProps> = ({
 
     if (map) {
       map.setOptions(options);
-
     }
   }, [ref, map]);
 
-  // Set the markers
+  // Set the initial markers
   useEffect(() => {
     if (map) {
-      const markers = [];
-
-      // IT ADDS NEW MARKERS NEED TO DELETE OLD ONES OR JUST MOVE THEM!
-      vendors.Items.forEach((vendor) => {
+      vendors.Items.forEach(vendor => {
         if (vendor.tweets.length) {
-
-          // YOU HAVE YOUR LAT LONG MIXED UP!
-          const marker = new google.maps.Marker({
-            position: { lat: vendor.tweets[vendor.tweets.length - 1].geo.coordinates.lat, lng: vendor.tweets[vendor.tweets.length - 1].geo.coordinates.long },
-            title: vendor.name,
-            map: map
-          });
-
-          // NOTE: NEED TO UNMOUNT LISTENERS
-          marker.addListener('click', () => {
-            console.log('clicked', vendor.name);
-          })
+          const newLat = vendor.tweets[vendor.tweets.length - 1].geo.coordinates.lat;
+          const newLong = vendor.tweets[vendor.tweets.length - 1].geo.coordinates.long
+          // Update marker if exists (and is not same position), else just add new one
+          if (
+            markers[vendor.twitterId]
+          ) {
+            if (
+              markers[vendor.twitterId]?.getPosition()?.lat() !== newLat && 
+              markers[vendor.twitterId]?.getPosition()?.lng() !== newLong
+            ) {
+              markers[vendor.twitterId].setPosition({
+                lat: newLat,
+                lng: newLong
+              })
+            }
+          } else {
+            const marker = new google.maps.Marker({
+              position: { lat: vendor.tweets[vendor.tweets.length - 1].geo.coordinates.lat, lng: vendor.tweets[vendor.tweets.length - 1].geo.coordinates.long },
+              title: vendor.twitterId,
+              map: map
+            });
+  
+            marker.addListener('click', () => {
+              console.log('clicked', vendor.twitterId);
+            });
+  
+            setMarkers({
+              ...markers,
+              [vendor.twitterId]: marker
+            })
+          }
         }
       })
-      // marker.setMap(null); // RESET
     }
-  }, [map, vendors.Items]) // might need to update vendors comparison here
-  
-
-  // // Double check once you end up changing props for markers
-  // // because React does not do deep comparisons, a custom hook is used to prevent onIdle from continously firing
-  // // see discussion in https://github.com/googlemaps/js-samples/issues/946
-  // useDeepCompareEffectForMaps(() => {
-  //   if (map) {
-  //     map.setOptions(options);
-  //   }
-  // }, [map, options]);
-
-  // React.useEffect(() => {
-  //   if (map) {
-  //     // If listeners change clear them
-  //     ["click", "idle"].forEach((eventName) =>
-  //       google.maps.event.clearListeners(map, eventName)
-  //     );
-
-  //     if (onClick) {
-  //       map.addListener("click", onClick);
-  //     }
-
-  //     if (onIdle) {
-  //       map.addListener("idle", () => onIdle(map));
-  //     }
-  //   }
-  // }, [map, onClick, onIdle]);
+  }, [map, vendors.Items])
 
   return (
     <>
@@ -113,19 +104,7 @@ const Map: React.FC<MapProps> = ({
   );
 };
 
-export default ({GOOGLE_MAPS_API_KEY, vendors}: MainMapProps) => {
-  // const [zoom, setZoom] = React.useState(3); // initial zoom
-  // const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
-  //   lat: 0,
-  //   lng: 0,
-  // });
-
-  // const onIdle = (m: google.maps.Map) => {
-    // console.log("onIdle");
-    // setZoom(m.getZoom()!);
-    // setCenter(m.getCenter()!.toJSON());
-  // };
-
+export default ({vendors, markers, setMarkers}: MainMapProps) => {
     return (
       <Wrapper apiKey={GOOGLE_MAPS_API_KEY} render={(status: Status) => {
         switch (status) {
@@ -142,11 +121,12 @@ export default ({GOOGLE_MAPS_API_KEY, vendors}: MainMapProps) => {
                   lat: 38.9072,
                   lng: -77.036
                 }}
-                // onIdle={onIdle}
                 disableDefaultUI
                 zoom={13}
                 style={{ height: "100%" }}
                 vendors={vendors}
+                markers={markers}
+                setMarkers={setMarkers}
               >
             </Map>
             </MapContainer>
@@ -155,6 +135,3 @@ export default ({GOOGLE_MAPS_API_KEY, vendors}: MainMapProps) => {
       }}/>
     )
   }
-
-
-  // NOTE INSTEAD OF GOOGLE MAPS REACT WRAPPER CONSIDER USING NEXT/SCRIPT TO LOAD IN GOOGLE MAPS 

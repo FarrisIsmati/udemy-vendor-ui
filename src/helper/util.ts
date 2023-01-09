@@ -6,4 +6,3 @@ export const vendorsSort = (vendors: Vendor[]) => vendors.sort((a,b) => {
     return bd - ad
 })
 
-export const isBrowser = typeof window !== "undefined";

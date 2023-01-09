@@ -1,6 +1,6 @@
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import styled from "styled-components";
-import { Geo } from "../../api/types";
+import { Geo, Vendor } from "../../api/types";
 
 interface TileProps {
     imgUrl: string,
