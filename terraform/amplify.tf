@@ -1,6 +1,6 @@
 resource "aws_amplify_app" "frontend" {
   name = "${var.app_name}"
-  repository = var.repo
+  repository = "https://github.com/FarrisIsmati/udemy-vendor-ui"
   access_token = var.PAT
 
   build_spec = <<-EOT
