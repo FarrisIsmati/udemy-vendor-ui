@@ -1,7 +1,7 @@
 resource "aws_amplify_app" "frontend" {
   name = "${var.app_name}"
   repository = var.github_repo
-  access_token= var.github_token
+  access_token = var.PAT
 
   build_spec = <<-EOT
     version: 1
@@ -43,11 +43,11 @@ resource "aws_amplify_app" "frontend" {
 #     target = "https://xxx.cloudfront.net/<*>" 
 #   }
 
-#   custom_rule {
-#     source = "/<*>"
-#     status = "404-200"
-#     target = "/index.html"  
-#   }
+  custom_rule {
+    source = "/<*>"
+    status = "404-200"
+    target = "/index.html"  
+  }
 
   tags = {
     name     = var.app_name

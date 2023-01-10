@@ -9,6 +9,8 @@ INITIAL SETUP
 3. Create github repo online (setup all actions needed) secrets
 4. create next app and install dependencies, create src folder & move pages, .babelrc file and `npm install --save-dev babel-plugin-styled-components` and .env.local file and next.config.js file
 5. setup .github/workflows/main.yml file
+6. Setup aws amplify app in github (get started on aws amplify and first step will setup github access)
+7. Add personal access token secret (https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#about-personal-access-tokens) Requires it for amplify (read only webhooks)
 
 SETUP + API
 1. Clean up pages Home file & update generic styles
@@ -45,5 +47,5 @@ DOCKERFILE SETUP
 
 TERRAFORM
 1. Update github OIDC role
-2.  
+2. 
 First test multiple accounts
