@@ -1,6 +1,6 @@
 resource "aws_amplify_app" "frontend" {
   name = "${var.app_name}"
-  repository = var.github_repo
+  repository = var.repo
   access_token = var.PAT
 
   build_spec = <<-EOT

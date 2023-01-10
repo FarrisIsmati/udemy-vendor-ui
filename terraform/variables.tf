@@ -8,6 +8,6 @@ variable "app_name" {
   default     = "udemy-vendor-ui"
 }
 
-variable "github_repo" {}
+variable "repo" {}
 
 variable "PAT" {}
