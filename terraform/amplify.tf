@@ -55,19 +55,19 @@ resource "aws_amplify_app" "frontend" {
   }
 }
 
-# resource "aws_amplify_branch" "master" {
-#   app_id      = aws_amplify_app.frontend.id
-#   branch_name = "master"
+resource "aws_amplify_branch" "master" {
+  app_id      = aws_amplify_app.frontend.id
+  branch_name = "master"
 
-#   stage     = "DEVELOPMENT"
+  stage     = "DEVELOPMENT"
 
-#   environment_variables = {
-#     REACT_APP_API_SERVER = "https://api.example.com"
-#     NEXT_PUBLIC_VENDORS_WEBSOCKET_URL="wss://8ramd7iqs7.execute-api.us-east-1.amazonaws.com/primary"
-#     NEXT_PUBLIC_VENDORS_API_URL="https://aak6izqgce.execute-api.us-east-1.amazonaws.com/primary/vendors"
-#     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=var.GOOGLE_MAPS_API_KEY
-#   }
-# }
+  environment_variables = {
+    REACT_APP_API_SERVER = "https://api.example.com"
+    NEXT_PUBLIC_VENDORS_WEBSOCKET_URL="wss://8ramd7iqs7.execute-api.us-east-1.amazonaws.com/primary"
+    NEXT_PUBLIC_VENDORS_API_URL="https://aak6izqgce.execute-api.us-east-1.amazonaws.com/primary/vendors"
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=var.GOOGLE_MAPS_API_KEY
+  }
+}
 
 
 # resource "aws_amplify_webhook" "master" {
