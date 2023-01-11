@@ -1,3 +1,5 @@
+# Work on build first locally
+# FIgure this out
 resource "aws_amplify_app" "frontend" {
   name = "${var.app_name}"
   repository = "https://github.com/FarrisIsmati/udemy-vendor-ui"

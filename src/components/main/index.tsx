@@ -3,12 +3,8 @@ import { Tweet, Vendors } from "../../api/types"
 import Dashboard from "../dashboard";
 import Map from '../../components/map';
 import styled from "styled-components";
-import getConfig from "next/config";
 import { websocket } from "../../api/websocket";
 import { vendorsSort } from "../../helper/util";
-
-const { publicRuntimeConfig } = getConfig()
-const { VENDORS_WEBSOCKET_URL } = publicRuntimeConfig
 
 interface MainProps {
     initVendors: Vendors
@@ -23,10 +19,12 @@ export default function Main({ initVendors }: MainProps) {
     const [vendors, setVendors] = useState(initVendors);
     const [markers, setMarkers] = useState<{[key: string]: google.maps.Marker}>({});
 
+    const websocketUrl = process.env.NEXT_PUBLIC_VENDORS_WEBSOCKET_URL;
+
     // Websocket connect
     useEffect(() => {
-        if (VENDORS_WEBSOCKET_URL) {
-            const ws = websocket(VENDORS_WEBSOCKET_URL);
+        if (websocketUrl) {
+            const ws = websocket(websocketUrl);
 
             const connected = () => {
                 console.log('connected')

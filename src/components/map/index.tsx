@@ -3,10 +3,6 @@ import mapStyle from './style';
 import React, { useEffect, useRef, useState } from "react";
 import styled from 'styled-components';
 import { Vendors } from "../../api/types";
-import getConfig from "next/config";
-
-const { publicRuntimeConfig } = getConfig()
-const { GOOGLE_MAPS_API_KEY } = publicRuntimeConfig
 
 interface MainMapProps {
   vendors: Vendors;
@@ -105,8 +101,9 @@ const Map: React.FC<MapProps> = ({
 };
 
 export default function MapWrapper({vendors, markers, setMarkers}: MainMapProps) {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
     return (
-      <Wrapper apiKey={GOOGLE_MAPS_API_KEY} render={(status: Status) => {
+      <Wrapper apiKey={apiKey} render={(status: Status) => {
         switch (status) {
           case Status.LOADING:
             return <p>loading</p>;
