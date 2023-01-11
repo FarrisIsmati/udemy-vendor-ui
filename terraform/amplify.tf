@@ -69,9 +69,8 @@ resource "aws_amplify_branch" "master" {
   }
 }
 
-
-# resource "aws_amplify_webhook" "master" { 
-#   app_id      = aws_amplify_app.frontend.id
-#   branch_name = aws_amplify_branch.master.branch_name
-#   description = "triggermaster"
-# }
+resource "aws_amplify_webhook" "master" { 
+  app_id      = aws_amplify_app.frontend.id
+  branch_name = aws_amplify_branch.master.branch_name
+  description = "triggermaster"
+}
