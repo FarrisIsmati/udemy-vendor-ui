@@ -1,5 +1,4 @@
-# Work on build first locally
-# FIgure this out
+# - env | grep -e NEXT_PUBLIC_ >> .env.production will add all NEXT_PUBLIC_* in prod to env var
 resource "aws_amplify_app" "frontend" {
   name = "${var.app_name}"
   repository = "https://github.com/FarrisIsmati/udemy-vendor-ui"
@@ -14,6 +13,7 @@ resource "aws_amplify_app" "frontend" {
             - yarn install
         build:
           commands:
+            - env | grep -e NEXT_PUBLIC_ >> .env.development
             - yarn run build
       artifacts:
         baseDirectory: .next
@@ -32,7 +32,7 @@ resource "aws_amplify_app" "frontend" {
   auto_branch_creation_config {
     enable_pull_request_preview = true
     environment_variables = {
-      APP_ENVIRONMENT = "develop"
+      APP_ENVIRONMENT = "development"
     }
   }
 
@@ -54,4 +54,22 @@ resource "aws_amplify_app" "frontend" {
   tags = {
     name     = var.app_name
   }
+}
+
+resource "aws_amplify_branch" "master" {
+  app_id      = aws_amplify_app.frontend.id
+  branch_name = "master"
+
+  stage     = "DEVELOPMENT"
+
+  environment_variables = {
+    REACT_APP_API_SERVER = "https://api.example.com"
+  }
+}
+
+
+resource "aws_amplify_webhook" "master" {
+  app_id      = aws_amplify_app.frontend.id
+  branch_name = aws_amplify_branch.master.branch_name
+  description = "triggermaster"
 }
