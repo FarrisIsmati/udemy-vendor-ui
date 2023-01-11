@@ -1,4 +1,4 @@
-# - env | grep -e NEXT_PUBLIC_ >> .env.production will add all NEXT_PUBLIC_* in prod to env var
+# - env | grep -e NEXT_PUBLIC_ >> .env.production will add all NEXT_PUBLIC_* in prod to env var 
 resource "aws_amplify_app" "frontend" {
   name = "${var.app_name}"
   repository = "https://github.com/FarrisIsmati/udemy-vendor-ui"
@@ -59,6 +59,7 @@ resource "aws_amplify_branch" "master" {
   app_id      = aws_amplify_app.frontend.id
   branch_name = "master"
 
+  framework = nex
   stage     = "DEVELOPMENT"
 
   environment_variables = {
