@@ -49,3 +49,8 @@ TERRAFORM
 1. Update github OIDC role
 2. 
 First test multiple accounts
+
+AWS
+1. Run Build for the first time
+2. All new branch pushes will update
+3. Make sure you migrate
