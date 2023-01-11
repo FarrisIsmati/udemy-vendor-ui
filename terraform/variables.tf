@@ -11,3 +11,5 @@ variable "app_name" {
 variable "repo" {}
 
 variable "PAT" {}
+
+variable "GOOGLE_MAPS_API_KEY" {}

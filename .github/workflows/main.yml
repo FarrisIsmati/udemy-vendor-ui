@@ -138,3 +138,4 @@ jobs:
           TF_VAR_aws_region: ${{ secrets.AWS_ECR_NAME }}
           TF_VAR_repo: https://github.com/FarrisIsmati/udemy-vendor-ui
           TF_VAR_PAT: ${{ secrets.PAT }}
+          TF_VAR_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}

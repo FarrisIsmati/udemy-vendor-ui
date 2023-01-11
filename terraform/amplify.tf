@@ -13,7 +13,6 @@ resource "aws_amplify_app" "frontend" {
             - yarn install
         build:
           commands:
-            - env | grep -e NEXT_PUBLIC_ >> .env.development
             - yarn run build
       artifacts:
         baseDirectory: .next
@@ -64,6 +63,9 @@ resource "aws_amplify_branch" "master" {
 
   environment_variables = {
     REACT_APP_API_SERVER = "https://api.example.com"
+    NEXT_PUBLIC_VENDORS_WEBSOCKET_URL="wss://8ramd7iqs7.execute-api.us-east-1.amazonaws.com/primary"
+    NEXT_PUBLIC_VENDORS_API_URL="https://aak6izqgce.execute-api.us-east-1.amazonaws.com/primary/vendors"
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=var.GOOGLE_MAPS_API_KEY
   }
 }
 
