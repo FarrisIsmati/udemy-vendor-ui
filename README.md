@@ -51,9 +51,8 @@ TERRAFORM
 First test multiple accounts
 
 AWS
-1. Run Build for the first time
-2. All new branch pushes will update
-3. Make sure you migrate
+1. Run Build for the first time or trigger new commit
+2. If error on build (target) migrate your app
 
 
-<!-- NEXT WORK ON REMOVING BRANCHES ON AMPLIFY -->
+<!-- NEXT WORK ON REMOVING BRANCHES ON AMPLIFY --> 
